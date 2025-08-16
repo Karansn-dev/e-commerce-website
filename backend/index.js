@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const admin = require('./firebase');
@@ -8,6 +9,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from the 'app' directory
+const staticPath = path.join(__dirname, "../app");
+app.use(express.static(staticPath));
+
 // Health-check route
 app.get('/', (req, res) => {
   res.send('Server is running');
@@ -15,23 +20,19 @@ app.get('/', (req, res) => {
 
 // Test route to verify Firebase Admin SDK
 app.get('/test-firebase', async (req, res) => {
-  // Debugging log to check if the route is hit
   console.log('Test Firebase route hit');
-
-  // Debugging log before listing users
   console.log('Attempting to list users from Firebase Admin SDK');
 
   try {
-    const users = await admin.auth().listUsers();
-
-    // Debugging log after successfully listing users
+    const userRecords = await admin.auth().listUsers();
     console.log('Successfully retrieved users from Firebase Admin SDK');
 
     res.status(200).json({
       message: 'Firebase Admin SDK is working!',
-      users: users.users.map(user => user.email),
+      users: userRecords.users.map(user => user.email),
     });
   } catch (error) {
+    console.error('Error listing users:', error); // Log the full error for better debugging
     res.status(500).json({
       message: 'Error testing Firebase Admin SDK',
       error: error.message,
@@ -40,8 +41,9 @@ app.get('/test-firebase', async (req, res) => {
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
+  console.log('Firebase Admin SDK initialized successfully');
   console.log(`Server is running on port ${PORT}`);
 });
 

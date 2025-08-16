@@ -14,6 +14,13 @@ import {
 } from "@/components/ui/navigation-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, ShoppingCart, Search, User } from "lucide-react"
+import { AuthTabs } from "./auth/auth-tabs"
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 export default function Navbar() {
   const [cartItems] = useState(3) // Mock cart count
@@ -151,9 +158,17 @@ export default function Navbar() {
             <Button variant="ghost" size="icon">
               <Search className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogTitle>Authentication</DialogTitle>
+                <AuthTabs />
+              </DialogContent>
+            </Dialog>
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-5 w-5" />
               {cartItems > 0 && (
